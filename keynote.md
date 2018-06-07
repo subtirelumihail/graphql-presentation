@@ -55,7 +55,7 @@ http://server.io?query={ news{ id, title },user{ id, name } }
 <img data-src="/syntax.png" alt="Syntax">
 
 <aside class="notes">
-  The query language is basically about selecting fields on objects.
+  Basically, the query language is about selecting fields on objects.
 </aside>
 
 --
@@ -71,32 +71,41 @@ http://server.io?query={ news{ id, title },user{ id, name } }
 
 --
 
-It uses a type system to describe data.
+#### It uses a type system to describe data.
 
 <img data-src="/type.png" alt="Syntax">
 
 <aside class="notes">
 
-The GraphQL Type system describes the capabilities of a GraphQL server and is used to determine if a query is valid. The type system also describes the input types of query variables to determine if values provided at runtime are valid.<br/>
-It has 3 main definitions:<br/>
-Schema Definition<br/>
-Type Definition<br/>
-Directive Definition
-
+The GraphQL Type system describes the capabilities of a GraphQL server in which it is used to determine if a query is valid and also describes the input types of query variables to determine if values provided at runtime are valid.<br/>
 </aside>
 
 
 --
 
-Aggregating data from multiple sources is less painfull
+#### Aggregating data from multiple sources is less painfull
 
-<img  height="500" data-src="/diagram.png" alt="Syntax">
+<span class="fragment">
+  <img  height="500" data-src="/diagram.png" alt="Syntax">
+</span>
 
 
 <aside class="notes">
-The core idea of REST is the resource. Each resource is identified by a URL, and you retrieve that resource by sending a GET request to that URL. You will likely get a JSON response, since that’s what most APIs are using these days. So it looks something like:
-<br />
+The most basic idea of REST is the resource. Each resource is identified by a URL, and you retrieve that resource by sending a GET request to that URL. You will likely get a JSON response, since that’s what most APIs are using these days. <br/>
+So it looks something like:
+</aside>
+
+--
+
+#### It lets the client specify exactly what data it needs.
+
+<img  height="600" data-src="/guy.png" alt="Syntax">
+
+<aside class="notes">
 With GraphQL you can simply ask for what you want (“get me the news, the user info and its authentification information”) and wait for them to return.
+
+So it is like going to a fast-food and ordering food, and then
+you get a small bag with everything you ordered
 </aside>
 
 
