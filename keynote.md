@@ -11,6 +11,10 @@ transition: "zoom"
     font-size: 0px;
 }
 
+p {
+  font-size: 24px;
+}
+
 </style>
 
 ## Exploring GraphQL with React and Node.js
@@ -86,24 +90,41 @@ In the first part I will present what GraphQL is and how we can use it and in th
 
 --
 
-#### 1. It uses a type system to describe data
+### 1. It uses a type system to describe data
 
-*
+*  The Type System is a description of which types of objects your server can return.
+
+*  The GraphQL type system supports the following kind of types:
+    *  Scalar
+    *  Object
+    *  Interface
+    *  Union
+    *  InputObject
+    *  Enum
 
 <aside class="notes">
-So, before we start to build our server, GraphQL requires us to design a schema that in the end defines the API of our server.
-We will talk about schemas a bit later on.<br />
+The Type System is a description of which types of objects your server can return.
+<br />
+One of the main advantages of GraphQL is that it enables flexibility in your data model by using the Type System.
+<br>
+The GraphQL type system supports the following kind of types:
+*  Scalar
+*  Object
+*  Union
+*  InputObject
+*  Enum
+*  Interface - which exposes a certain set of fields that a type must include to implement the interface
 </aside>
 
 --
 
-##### 2. Aggregating data from multiple sources is less painfull
+### 2. Aggregating data from multiple sources is less painfull
 
 <span class="fragment">
-  <img  height="500" data-src="/rest.png" alt="Syntax">
+  <img  height="500" data-src="/rest.gif" alt="Syntax">
 </span>
 <span class="fragment">
-  <img  height="500" data-src="/graphql.png" alt="Syntax">
+  <img  height="500" data-src="/graphql.gif" alt="Syntax">
 </span>
 
 <aside class="notes">
@@ -116,16 +137,16 @@ On the right side we see that the GraphQL layer lives between the client and one
 
 --
 
-#### 3. It lets the client specify exactly what data it needs.
+### 3. It lets the client specify exactly what data it needs.
 
-<img  height="600" data-src="/guy.png" alt="Syntax">
+<img  height="400" data-src="/guy.png" alt="Syntax">
 
 <aside class="notes">
-This means that on the server you can send the data output into whatever shape the client requires.
+This means that on the server we can send the data output into whatever shape the client requires and on the client we can request the data in whatever shape we want
 <br/>
-So imagine this example: <br />
-I have to do 3 tasks, the first one is to get my clothes from the dry cleaner , the second one is to go to the postoffice and get my package and the third one is to buy food from my favorite restaurant . So I will need to go to 3 different places in order to complete this tasks, right ? Ok.
-With GraphQL is the same as having a personal assistant and instead of doing those tasks by myself I will only give him a list of the the addresses of the postoffice, dry cleaner  and of a restaurant, and then wait for him to return with my clothes, food and my package.
+So we can imagine this example: <br />
+I have to do 3 tasks, the first one is to get my clothes from the dry cleaner , the second one is to go to the Post Office and get my package and the third one is to buy food from the grocery store . So I will need to go to 3 different places in order to complete this tasks, right ? Ok.
+With GraphQL is the same as having a personal assistant and instead of doing those tasks by myself I will only give him a list of the the addresses of the 3 places I need to visit, and then wait for him to return with what I need.
 </aside>
 
 --
@@ -237,14 +258,15 @@ So basically the query has exactly the same shape as the result we want to get
 *  <div class="fragment">Are a common accepted convention that every operation that includes writes should be sent using a mutation.</div>
 *  <div class="fragment">We use mutations to write and read data</div>
 <br/>
-<br/>
 <span class="fragment">
 ```
   type Mutations {
     // update the user name
     updateUser(id: ID!, name: String!): User,
     // create a new message
-    newMessage(content: String!): Message
+    newMessage(content: String!): Message,
+    // delete a message
+    deleteMessage(id: ID!): Message
   }
 ```
 </span>
