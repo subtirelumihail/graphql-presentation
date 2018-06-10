@@ -1,5 +1,5 @@
 ---
-theme : "black"
+theme : "league"
 transition: "zoom"
 ---
 
@@ -10,6 +10,7 @@ transition: "zoom"
     line-height: 0px;
     font-size: 0px;
 }
+
 </style>
 
 ## Exploring GraphQL with React and Node.js
@@ -19,120 +20,126 @@ with
 *Mihail Subtirelu*  & *Adrian Staniloiu*
 
 <aside class="notes">
-  Hello, my name is Subtirelu Mihail, I am a frontend developer at MetroSystems and togheter with my coleague Adrian Staniloiu we will to show you a new alternative to REST APIs.
-  <br />
-  First of all we want to know a little bit about you guys, so we have a few questions: <br/>
-  1. First question: How many people here have worked or work with Javascript ?<br/>
-      No > Yes: Wow, a lot of you didn't work with Javascript, Oh well, I am sorry for you guys but the examples in this presentation are written in JS. I am sure you will understand what we try to explain :)<br />
-
-  2. Second question: How many of you know what a REST API is ? <br />
-      No > Yes: Ok, so basically a REST API defines a set of functions which you can perform requests and receive responses via HTTP protocol such as GET and POST.
-      <br />
-
-  3. Ok, and how many of you know about or worked with Nodejs ? <br/>
-  Nice!
+  Hello, my name is Subtirelu Mihail, I am a frontend developer at MetroSystems and togheter with my coleague Adrian Staniloiu we will be exploring Graphql with the help of React.js and Node.js
 </aside>
 
+---
+
+### Workshop Structure
+
+1.  <div class="fragment">An introduction to GraphQL <br />- *Mihai Subtirelu* </div>
+
+2.  <div class="fragment">
+Live coding of a chat app with React and Nodejs
+<br />
+ - *Adrian Staniloiu*
+</div>
+
+<aside class="notes">
+The workshop will be structured in 2 parts.
+In the first part I will present what GraphQL is and how we can use it and in the second part my coleague Adrian will do a live coding of a chat application that uses GraphQL. On the client he will be using React.js and on the Server he will use
+</aside>
 
 ---
 
 ## GraphQL
 
-What is this ?
+<div class="current-visible">
+  What is this ?
+</div>
+<div>
+*  <div class="fragment">GraphQL is a *data query language* that describes how to ask for data and a server-side runtime for executing queries</div>
+*  <div class="fragment">Can be use both on the client applications and also on the server.</div>
+*  <div class="fragment">It isn't tied to any specific database or storage engine and is instead backed by your existing code and data.e</div>
+</div>
+<br />
+
 
 <aside class="notes">
-  GraphQL is a data query language that describes how to ask for data. <br />
-  It was internally developed by the guys at Facebook in 2012 and release publicaly in 2015
-  GraphQL can be use both on the client applications and also on the server. <br/>
+  GraphQL is a data query language that describes how to ask for data and a server-side runtime for executing queries <br />
+  It was developed by the guys at Facebook in 2012 and release publicly in 2015 under MIT License <br />
+  Can be use both on the client applications and also on the server
+  <br />
   On the client you use it to request data from the server and on the server you can use it to get the data from multiple sources and send it to the client.
-  So it can be used as an alternative to the REST APIs and ad-hoc web arhitecture
+  <br />
+  It isn't tied to any specific database or storage engine and is instead backed by your existing code and data.
+  <br/ >
 </aside>
-
 
 --
 
-```
-http://server.io?query={ news{ id, title },user{ id, name } }
-```
+### A new alternative to REST ?
 
-<img data-src="/syntax.png" alt="Syntax">
+<span>
+  *  <div class="fragment">GraphQL and REST are not so different after all</div>
+  *  <div class="fragment">GraphQL has many elements of the REST model built in.</div>
+  *  <div class="fragment">GraphQL has 3 main characteristics</div>
+</span>
+<aside class="notes">
+  Can we consider GraphQL as an alternative to REST APIs ?
+  Well GraphQL and REST are not so different after all.
+  <br/>
+  GraphQL has many elements of the REST model built in.
+  <br/>
+  Instead GraphQL has some small changes that make a big difference to the developer experience of building or consuming an API.
+</aside>
+
+--
+
+#### 1. It uses a type system to describe data
+
+*
 
 <aside class="notes">
-  So basically, GraphQL is about asking for specific fields on objects. Let's look at a very simple query and the result we get from it.
+So, before we start to build our server, GraphQL requires us to design a schema that in the end defines the API of our server.
+We will talk about schemas a bit later on.<br />
 </aside>
 
 --
 
-### Why an alternative to REST ?
-
-
-<aside class="notes">
-  GraphQL and REST are not so different after all, but GraphQL has some small changes that make a big difference to the developer experience of building or consuming an API.
-</aside>
-
-<span class="fragment">GraphQL has 3 main characteristics:</span>
-
---
-
-#### It uses a type system to describe data.
-
-
-```
-  type User {
-    id: ID!,
-    name: String!
-  }
-
-  type Post {
-    id: ID!,
-    title: String!,
-    content: String
-  }
-```
-
-<aside class="notes">
-
-The GraphQL Type system describes the capabilities of a GraphQL server in which it is used to determine if a query is valid and also describes the input types of query variables to determine if values provided at runtime are valid.<br/>
-So the core of the GraphQL consists in the this Type schemas.
-</aside>
-
-
---
-
-#### Aggregating data from multiple sources is less painfull
+##### 2. Aggregating data from multiple sources is less painfull
 
 <span class="fragment">
-  <img  height="500" data-src="/diagram.png" alt="Syntax">
+  <img  height="500" data-src="/rest.png" alt="Syntax">
+</span>
+<span class="fragment">
+  <img  height="500" data-src="/graphql.png" alt="Syntax">
 </span>
 
-
 <aside class="notes">
-The most basic idea of REST is the resource. Each resource is identified by a URL, and you retrieve that resource by sending a GET request to that URL. You will likely get a JSON response,since that’s what most APIs are using these days. <br/>
-So it looks something like this on the right:
+So the most basic idea of REST is the resource. <br/>
+Each resource is identified by a URL, and you retrieve that resource by sending a GET request to that URL. <br />
+You will likely get a JSON response, since that’s what most APIs are using these days. <br/>
 <br/>
-On the left we can see that the GraphQL layer lives between the client and one or more data sources (like Facebook, Twitter or other 3rd party apps), receiving client requests and fetching the necessary data according to your instructions.
+On the right side we see that the GraphQL layer lives between the client and one or more data sources (like Facebook, Twitter or other 3rd party apps), receiving client requests and fetching the necessary data according to your instructions.
 </aside>
 
 --
 
-#### It lets the client specify exactly what data it needs.
+#### 3. It lets the client specify exactly what data it needs.
 
 <img  height="600" data-src="/guy.png" alt="Syntax">
 
 <aside class="notes">
-With GraphQL you can simply ask for what you want and wait for them to return.
+This means that on the server you can send the data output into whatever shape the client requires.
 <br/>
-So it is like going to a fast-food and ordering food (“I want a pizza, a Cola and a cupcake”), and then
-you get a small bag with everything you ordered in return
+So imagine this example: <br />
+I have to do 3 tasks, the first one is to get my clothes from the dry cleaner , the second one is to go to the postoffice and get my package and the third one is to buy food from my favorite restaurant . So I will need to go to 3 different places in order to complete this tasks, right ? Ok.
+With GraphQL is the same as having a personal assistant and instead of doing those tasks by myself I will only give him a list of the the addresses of the postoffice, dry cleaner  and of a restaurant, and then wait for him to return with my clothes, food and my package.
 </aside>
 
 --
 
 
-### Components
+### Building Blocks
 
-3 main building blocks: the Schema, Queries, and Resolvers.
-
+GraphQL is organized around 4 main building blocks:
+<div style="text-align:left">
+*  Schema
+*  Queries
+*  Mutations
+*  Resolvers
+</div>
 <aside class="notes">
 The GraphQL API is organized around three main building blocks: the schema, queries, and resolvers.
 </aside>
@@ -141,28 +148,32 @@ The GraphQL API is organized around three main building blocks: the schema, quer
 
 ### Schema
 
-Schema Definition Language (SDL)
+<span>
+<div style="font-size: 26px">
+In GraphQL we don’t use URLs to identify what is available in the API, instead we use a GraphQL schema that has its own type language, called the *Schema Definition Language* or SDL.
+</div>
+</span>
+<br/>
 
 ```js
-    type User {
-      id: ID!
-      name: String!
-      username: String
-    }
+type User {
+  id: ID!
+  name: String!
+  username: String
+}
 
-    type Query {
-      user(id: ID!): User!
-    }
+type Query {
+  user(id: ID!): User!
+}
 
-    type Mutation {
-      user(id: ID!, name: String!): User!
-    }
+type Mutation {
+  user(id: ID!, name: String!): User!
+}
 ```
 
 <aside class="notes">
-Before starting to build your server, GraphQL requires you to design a schema which in turn defines the API of your server.
-GraphQL has its own type language that’s used the write GraphQL schemas
-In its simplest form, GraphQL SDL can be used to define types looking like this:
+In GraphQL we don’t use URLs to identify what is available in the API. Instead, we use a GraphQL schema that has its own type language, called the Schema Definition language or SDL.<br />
+In its simplest form, GraphQL SDL can be used to define types looking like this:<br/ >
 The User type alone doesn’t expose any functionality to client applications, it simply defines the structure of a user model in our application. In order to add functionality to the API, you need to add fields to the root types of the GraphQL schema: Query, Mutation and Subscription.
 </aside>
 
@@ -170,57 +181,120 @@ The User type alone doesn’t expose any functionality to client applications, i
 
 ### Queries
 
-Query
+*  Can traverse related objects and their fields
+*  The queries are only used to read data from the server
+
+<div class="fragment" style="width:49%; display: inline-block; float: left">
 ```js
-  query {
-    user {
-      id
-      name
-    }
+query {
+  user {
+    id,
+    name
   }
+  messages {
+    id,
+    content
+  }
+}
 ```
-
+</div>
 <aside class="notes">
-The request you make to your GraphQL API is the query, and it looks something like this:
+With the GraphQL queries we can go through a lot of related objects and their fields and get all the related data in one request, instead of making several roundtrips as we would need in a classic REST architecture.
 <br />
-We’re declaring a new query using the query keyword, then asking for a field named user.
-The query has exactly the same shape as the result
+Queries should only used to read data from the server
+<br />
+In this example we want to get the user with its id and name and also hes messages and for each message we want to get the id and the message content
+<br />
+We will start by declaring a new query using the query keyword, then asking for a field named user and for a field names messages.
+So basically the query has exactly the same shape as the result we want to get
 </aside>
-<span class="fragment">
-Response
+<span class="fragment" style="width:49%; display: inline-block">
+  <span>
 
-```json
+  ```json
 {
   "data": {
     "user": {
       "id": "a9120sx",
       "name": "John Doe"
-    }
+    },
+    "messages": [
+      {
+        id: "2391x8",
+        content: "Hello World"
+      }
+    ]
   }
 }
-```
+  ```
+  </span>
 </span>
 
 --
 
 ### Mutations
 
+*  <div class="fragment">Are a common accepted convention that every operation that includes writes should be sent using a mutation.</div>
+*  <div class="fragment">We use mutations to write and read data</div>
+<br/>
+<br/>
+<span class="fragment">
 ```
-        type Mutation {
-          user(id: ID!, name: String!): User!
-        }
+  type Mutations {
+    // update the user name
+    updateUser(id: ID!, name: String!): User,
+    // create a new message
+    newMessage(content: String!): Message
+  }
 ```
+</span>
+
 
 <aside class="notes">
 Technically we can modify data on the server using a query. However, the common accepted convention is that every operation that includes writes should be sent using a mutation.
-Despite that, mutations are really much like the query objects we have been writing so far. They too have a type, arguments and a resolve function.
+So mutations are really like the Query objects because they also have a type, arguments and resolvers.
+
 </aside>
+
+--
+
+### Resolvers
+
+*  <div class="fragment">Are a collection of functions that are called to  execute the schema fields.</div>
+*  <div class="fragment">The collection should have a map of resolvers for each relevant GraphQL Object Type</div>
+*  <div class="fragment">It is also called a "resolver map"</div>
+<br/>
+<span class="fragment">
+```js
+const resolverMap = {
+    Query: {
+      user(obj, args, context, info) {
+        return find(users, { id: args.id });
+      },
+    },
+    User: {
+      messages(author) {
+        return filter(messages, { userId: author.id });
+      },
+    },
+};
+```
+</span>
+
+
+<aside class="notes">
+In the GraphQL schema we already describe all of the fields, arguments, and result types, the only thing left to do is to create a collection of functions that we need call in order to actually execute these fields.
+The Resolver functions cannot be included in the GraphQL schema language, so they must be added separately and we should have a map of resolvers for each relevant GraphQL Object Type we defined.
+In javascript, they can look like this:
+</aside>
+
 
 ---
 
-### Live example
+### Live coding example
 
 <aside class="notes">
-Next, my colleague Adrian Staniloiu will live code an example of a simple Blog like application
+Before we continue with the live coding example, I want to mention that at Metrosystems we migrating our client apps to frontend microservices and because we need to have a common query language both on the client and also on the server, GraphQL fits our needs.
+Next, my colleague Adrian Staniloiu will show you how we can build small chat app
+using GraphQL, React and Nodejs.
 </aside>
-
