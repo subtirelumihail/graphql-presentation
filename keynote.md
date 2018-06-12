@@ -33,7 +33,7 @@ with
 
 1.  An introduction to GraphQL <br />with *Mihai Subtirelu*
 
-2.  Live coding of a chat app with React and Nodejs
+2.  Implementing a chat app with React and Nodejs
 <br />
 with *Adrian Staniloiu*
 
@@ -330,12 +330,13 @@ Next up, my colleague Adrian Staniloiu will show you how we can build small chat
 
 
 <aside class="notes">
-Ok, so for today we will demonstrate how use graphql by creating a small  realtime chat app.
+Ok, so for today we will demonstrate how to use graphql by implementng a chat application.
+For the purpose of thi my dependencies are already installed and also I hvae created my the structure of the sever and will destructure the implemenation.
+For those who want to follow the implementatio on your own station you can clone our repositiory and checkout server branch.
 The first step will be to create the folder structure of the app.
 We will have a folder for the client and one for the server.
 - client
 - server
-For those who want to code in realtime you can clone our repositiory and checkout server branch
 Now let's go and build our server.
 </aside>
 
@@ -359,10 +360,10 @@ For this we will have the following dependencies:
 </aside>
 
 <aside class="notes">
-For the purpose of this demo I already installed my dependencies created my the structure of the sever and will only be adding the implemenattion. CHeck server branch and npm install, make sure to have ngraphql, prisma globally.
+Also make sure to have ngraphql, prisma globally.
 Now I will go through all the steps.
 
-For the database we have created a folder prisma where we have initiated prisma using the prisma init command that will create a prisma.yml and a datamodel.graphql file where the main types will be held and a docker-compose.yml file if we have choosen this in the setup.
+For the database we have created a folder prisma where we have initiated prisma using the prisma init command. Prisma will create for us a prisma.yml and a datamodel.graphql file where the main types will be held and a docker-compose.yml file if we have choosen this in the setup.
 
 For the next we will define our types in the prisma / datamodel, in our case will be the Message like this; The message will have an ID which is unique and author field, string and content also string.
 
