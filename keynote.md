@@ -324,3 +324,334 @@ In javascript, they can look like this:
 So, just to wrap things up, at Metrosystems we are migrating our current client apps to frontend microservices arhitecture and because we need to have a common query language both on the client and also on the server this is way GraphQL fits our needs. <br/>
 Next up, my colleague Adrian Staniloiu will show you how we can build small chat appusing GraphQL, React and Nodejs.
 </aside>
+
+
+--
+
+
+<aside class="notes">
+Ok, so for today we will demonstrate how use graphql by creating a small  realtime chat app.
+The first step will be to create the folder structure of the app.
+We will have a folder for the client and one for the server.
+- client
+- server
+For those who want to code in realtime you can clone our repositiory and checkout server branch
+Now let's go and build our server.
+</aside>
+
+
+### Server
+- nodejs
+- graphql
+- prisma
+- prisma-binding
+- graphql-yoga
+- docker 
+
+<aside class="notes">
+For this we will have the following dependencies:
+- nodejs: as many of you know, is a platform for building server applications using JavaScript.
+- graphql: is a query language for APIs and a runtime queries.
+- prisma: is the glue between your GraphQL API and database. Implement resolvers using  bindings and delegate queries to  the  query engine
+- prisma-binding: is a tool that simplifies the GraphQL implementions of the resolvers by delegating execution of queries to the API.
+- graphql-yoga: is a Fully-featured GraphQL Server which handles the network configurations, cors, middlewares and other server stuff.
+- docker: is a container that will allow our app to be packaged as an application with all of the parts it needs.
+</aside>
+
+<aside class="notes">
+For the purpose of this demo I already installed my dependencies created my the structure of the sever and will only be adding the implemenattion. CHeck server branch and npm install, make sure to have ngraphql, prisma globally.
+Now I will go through all the steps.
+
+For the database we have created a folder prisma where we have initiated prisma using the prisma init command that will create a prisma.yml and a datamodel.graphql file where the main types will be held and a docker-compose.yml file if we have choosen this in the setup.
+
+For the next we will define our types in the prisma / datamodel, in our case will be the Message like this; The message will have an ID which is unique and author field, string and content also string.
+
+type Message {
+    id: ID! @unique
+    author: String!
+    content: String!
+}
+
+Prisma will generate the schema for the prisma types and for we will need to deploy prisma, using docker-compose up -d and after the prisma deploy --force command.
+
+Based on your data model, Prisma generates a ready-to-use GraphQL API exposing a powerful CRUD GraphQL schema.
+
+The next will be to create the file schema.graphql that will contain our schema definition the queries, mutations and subscriptions.
+First will import the message type and subscription payload from the generated prsima schema:
+
+#import Message, MessageSubscriptionPayload from "./generated/prisma.graphql"
+
+After that will create a query for the messages:
+type Query {
+    messages: [Message!]!
+}
+
+Some mutations like:
+type Mutation {
+    addMessage(author: String!, content: String!): Message!,
+    modifyMessage(id: ID!, content: String): Message!
+    removeMessage(id: ID!): Message!
+}
+
+and a subscriptions for the last messages added.
+type Subscription {
+    newMessage: MessageSubscriptionPayload!
+}
+
+After the scheme is done we can start implementing our server and adding logic in the 
+-index.js file.
+Here we've import the following packages:
+
+const {GraphQLServer} = require('graphql-yoga');
+const {Prisma} = require('prisma-binding');
+ 
+We will start to create our resolvers and begin with the the query:
+
+    Query: {
+        messages: (obj, args, context, info) => {
+            return context.db.query.messages({}, info)
+        },
+    },
+
+    ...
+    obj: The object that contains the result returned from the resolver on the parent field, or, in the case of a top-level Query field, the rootValue passed from the server configuration. This argument enables the nested nature of GraphQL queries.
+args: An object with the arguments passed into the field in the query. For example, if the field was called with author(name: "Ada"), the args object would be: { "name": "Ada" }.
+context: This is an object shared by all resolvers in a particular query, and is used to contain per-request state, including authentication information, dataloader instances, and anything else that should be taken into account when resolving the query. If you’re using Apollo Server, read about how to set the context in the setup documentation.
+info: This argument should only be used in advanced cases, but it contains information about the execution state of the query, including the field name, path to the field from the root, and more. It’s only documented in the GraphQL.js source code....
+
+The next step will be to create some mutations for our data model:
+
+Mutation: {
+        addMessage: (root, args, context, info) => {
+            return context.db.mutation.createMessage(
+                {
+                    data: {
+                        author: args.author,
+                        content: args.content
+                    }
+                },
+                info,
+            )
+        },
+        removeMessage: (root, args, context, info) => {
+            return context.db.mutation.deleteMessage({
+                where: {
+                    id: args.id
+                }
+            })
+        }
+    },
+
+    And last a Subscription for any time a new message is added:
+
+    Subscription: {
+        newMessage: {
+            subscribe: async (root, args, context, info) => {
+                return context.db.subscription.message(
+                    {
+                        where: {
+                            mutation_in: ['CREATED'],
+                        },
+                    },
+                    info
+                )
+            },
+        },
+    }
+
+After the resolver are finsihed we can now configure our server by instantiating our Grapqh Yoga server and passing the schema, resolvers and configure it.
+
+One last step to do is to generate the graphqlconfig.yml file using grapghql init command. THis file ill keep the project overview settings.
+ 
+After this we can start our server and check the playground and do some operations in real time in the database.
+
+We will do a mutation by addding a new message manually, query and subscription.
+</aside>
+
+
+---
+
+### Client
+- create-react-app
+- react
+- graphql
+- apollo-client
+- react-apollo
+- subscriptions-transport-ws
+
+<aside class="notes">
+For the client side we will use create-react-app that will generate a simple react applications and graphql dependencies.
+THe major ones I can mention are:
+- apollo-client: The client is designed to help you quickly build a UI that fetches data with GraphQL, and can be used with any JavaScript front-end.
+-react-apollo: will allow us to fetch data from your GraphQL server and use it in building complex and reactive UIs components.
+- subscriptions-transport-ws: A GraphQL WebSocket server and client to facilitate GraphQL queries, mutations and subscriptions over WebSocket.
+
+Will start by connection to our API by creating a http link for it:
+
+const httpLink = new HttpLink({uri: `http://localhost:4000`});
+
+
+after that will initiate also our websocket connection for the subscriptions:
+
+const wsLink = new WebSocketLink({
+    uri: `ws://localhost:4000`,
+    options: {
+        reconnect: true
+    }
+});
+
+Will create the link for the client and also treat aeach connection separate.
+
+const link = split(
+    ({query}) => {
+        const {kind, operation} = getMainDefinition(query)
+        return kind === 'OperationDefinition' && operation === 'subscription'
+    },
+    wsLink,
+    httpLink
+);
+
+And then will instantiate the client with the link and a use as cache the memory:
+
+const client = new ApolloClient({
+    link,
+    cache: new InMemoryCache(),
+});
+
+And after that we will need to provide the client to our app using the APollo provide from apollo client.
+
+ReactDOM.render(
+    <ApolloProvider client={client}>
+        <App/>
+    </ApolloProvider>,
+    document.getElementById('root'),
+);
+
+So we setup our connection and now we will create s dumb componet to paint our messages:
+
+import React from 'react';
+
+const Message = (props) => {
+    return (
+        <div className="message" id={props.id}>
+            <h2 className="message-author">{props.author}</h2>
+            {props.content && <p className="message-content">{props.content}</p>}
+        </div>
+    )
+}
+
+export default Message;
+
+
+and will start coding the app logic.
+Will import our message so we can use it in the queries.
+
+Firstly we will query using graphql sintax the messages:
+
+ <Query query={gql`
+      {
+          messages {
+              id,
+              author,
+              content
+          }
+      }
+  `}>
+  {
+      ({loading, error, data, refetch}) => {
+
+and will treat the each state of the component
+
+if (loading) {
+                                return (<h3>Loading...</h3>);
+                            }
+
+                            if (error) {
+                                return (<h3>{error.message}</h3>);
+                            }
+
+
+
+and will paint the messages:
+
+return (
+                                <div className="messages">
+
+                                    {
+                                        data.messages.map((message, i) => {
+                                            return (
+                                                <Message key={i} {...message} />
+                                            )
+                                        })
+                                    }
+
+                                
+
+                                </div>
+                            );
+
+     }
+                    }
+
+                </Query>
+
+So now let's check if any message are displayed in our app.
+Ok, everyhing is fine, let's subscribe to the new messages by adding the subscrition in the listing.
+
+    <Subscription
+    subscription={gql`
+      subscription newMessage {
+        newMessage {
+            node{
+                id,
+                author,
+                content
+            },
+
+        }
+      }
+    `}
+>
+    {({data, loading}) => {
+        if (loading) {
+            return ('Listening...');
+        }
+        if (data) {
+            return (<Message {...data.newMessage.node} />);
+        }
+
+    }}
+                                    </Subscription>
+
+
+                                    OK let's add a message in the api and see if that is automatically added.
+
+
+The last step will be to create simple form that will allow user to post:
+
+<Mutation mutation={gql`
+                    mutation addMessage($author: String!, $content: String!) {
+                        addMessage(author: $author, content: $content) {
+                                                id,
+                                                author,
+                                                content,
+                                            }
+                                        }
+                                    `}>
+                    {addMessage => (
+                        <form action="/" className="add-message" onSubmit={e => {
+                            e.preventDefault();
+
+                            addMessage({
+                                variables: {author: this.author.value, content: this.content.value}
+                            })
+                        }}>
+                            <input type="text" ref={(node) => this.author = node}/><br/>
+                            <textarea ref={(node) => this.content = node} cols="30"
+                                      rows="5"></textarea><br/>
+                            <button type="submit">Add Message</button>
+                        </form>
+                    )}
+                </Mutation>
+
+</aside>
