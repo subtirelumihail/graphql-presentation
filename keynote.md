@@ -315,15 +315,17 @@ The Resolver functions cannot be included in the GraphQL schema language, so the
 In javascript, they can look like this:
 </aside>
 
-
----
-
-### Live coding example
-
 <aside class="notes">
 So, just to wrap things up, at Metrosystems we are migrating our current client apps to frontend microservices arhitecture and because we need to have a common query language both on the client and also on the server this is way GraphQL fits our needs. <br/>
 Next up, my colleague Adrian Staniloiu will show you how we can build small chat appusing GraphQL, React and Nodejs.
 </aside>
+
+---
+
+
+### Realtime Chat app
+
+https://github.com/adrianstaniloiu/nodejs-graphql-react-chat
 
 
 --
@@ -332,7 +334,7 @@ Next up, my colleague Adrian Staniloiu will show you how we can build small chat
 <aside class="notes">
 Ok, so for today we will demonstrate how to use graphql by implementng a chat application.
 For the purpose of thi my dependencies are already installed and also I hvae created my the structure of the sever and will destructure the implemenation.
-For those who want to follow the implementatio on your own station you can clone our repositiory and checkout server branch.
+For those who want to follow the implementatio on your own station you can clone our repositiory and checkout master branch.
 The first step will be to create the folder structure of the app.
 We will have a folder for the client and one for the server.
 - client
@@ -355,12 +357,12 @@ For this we will have the following dependencies:
 - graphql: is a query language for APIs and a runtime queries.
 - prisma: is the glue between your GraphQL API and database. Implement resolvers using  bindings and delegate queries to  the  query engine
 - prisma-binding: is a tool that simplifies the GraphQL implementions of the resolvers by delegating execution of queries to the API.
-- graphql-yoga: is a Fully-featured GraphQL Server which handles the network configurations, cors, middlewares and other server stuff.
+- graphql-yoga: is a Fully-featured GraphQL Server that  handles the network configurations, cors, middlewares and other server stuff.
 - docker: is a container that will allow our app to be packaged as an application with all of the parts it needs.
 </aside>
 
 <aside class="notes">
-Also make sure to have ngraphql, prisma globally.
+Also make sure to have ngraphql, prisma installed globally.
 Now I will go through all the steps.
 
 For the database we have created a folder prisma where we have initiated prisma using the prisma init command. Prisma will create for us a prisma.yml and a datamodel.graphql file where the main types will be held and a docker-compose.yml file if we have choosen this in the setup.
